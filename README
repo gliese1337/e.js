@@ -1,1 +1,81 @@
-edge.js is a minimalist framework for node.js for attaching applications to a RESTful web-service frontend.
+edge.js is a minimalist framework for node.js for creating RESTful web-service frontends.
+
+edge.js is not intended to serve web pages, although it certainly can be used for that; just point the router at a static directory. It is intended to help build an interface between stuff on your server box and other stuff that wants to access it over the web.
+
+Routed-to functions are passed the request and response objects as the first two parameters, followed by whatever else you like.
+The request object is automatically augmented with GET and POST maps.
+
+The router can be configured with a urls.config file or a urls.json file.
+
+The urls.config file, which lists the virtual directory structure (with Python-style meaningful whitespace to show nesting levels) for your URLs and maps it either to controller functions (indicated by a dot-separated module file and function name) or static directories (indicated by a leading '/'). #-prefixed lines indicate special functions / static files outside of the virtual directory structure, mainly error codes (only 404 and 500 are implemented at the moment); there are defaults built in for all of those, but the config file can overwrite them.
+
+The router handles 4 different types of routes:
+1. No mapping, implied mapping to the 404 error function.
+2. Mapping to static directories.
+3. Mapping to a function that can take an optional array of extra
+arguments (the default).
+In this case, if the directory list continues beyond what you have
+mappings for, the remaining segments of the path will be passed to the
+handler function in an array.
+4. Mapping to a function that takes a specific number of arguments,
+indicated by ":" followed by zero or more type codes.
+In this case, elements of the path beyond the end of the routing tree
+will be converted into the datatypes specified by the config file and
+passed as individual arguments to the handler function. If the number
+of arguments supplied doesn't match up properly, it throws a 404
+error.
+
+A sample config file looks like this:
+
+"""
+
+controllers.start :
+index	controllers.start
+	dir1 controllers.dir1 : s d
+dir2
+	upload	controllers.upload
+static /home/www/
+#404 errors.err404
+
+"""
+
+The JSON equivalent looks like this:
+
+"""
+
+{
+	"/":"bin/controllers.start",
+	"#args":[],
+	"index":{
+		"/":"bin/controllers.start",
+		"dir1":{
+			"/":"bin/controllers.dir1",
+			"#args":["s","d"]
+		}
+	},
+	"dir2":{
+		"upload":{
+			"/":"bin/controllers.upload"
+		}
+	},
+	"static":{
+		"/":"/home/www"
+	},
+	"#404":"bin/errors.err404"
+}
+
+"""
+
+The server is started with
+node index.js [json] [port]
+Without the 'json' argument, it will default to trying to read urls.config; without a port argument, it will default to port 80.
+
+TODO:
+-Add routing for calls to external programs (e.g., using process.spawn or process.exec)
+-Implement file uploads.
+-Add better pattern matching for passing arguments from the router.
+-Add more type codes to the router.
+-Come up with some coherent error-handling system.
+-Implement more default server error codes.
+-Improve the efficiency of static file transfers, probably using some variation on sendfile(2).
+-Add support for SPDY.
