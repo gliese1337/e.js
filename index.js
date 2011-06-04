@@ -8,7 +8,7 @@ process.on('uncaughtException', function(err){
 		console.log(err.stack);
 	}
 });
-require("./edge/url_config").get_urls(process.argv[2],function(path_map){
+require("./e/url_config").get_urls(process.argv[2],function(path_map){
 	console.log(path_map);
-	require("./edge/server").start(require("./edge/router").route, path_map, process.argv[3] || process.argv[2] || 80);
+	require("./e/server").start(require("./e/router").route, path_map, process.argv[3] || process.argv[2] || 80);
 });
