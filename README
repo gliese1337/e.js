@@ -1,6 +1,6 @@
-edge.js is a minimalist framework for node.js for creating RESTful web-service frontends.
+e.js ('edges') is a minimalist framework for node.js for creating RESTful web-service frontends.
 
-edge.js is not intended to serve web pages, although it certainly can be used for that; just point the router at a static directory. It is intended to help build an interface between stuff on your server box and other stuff that wants to access it over the web.
+e.js is not intended to serve web pages, although it certainly can be used for that; just point the router at a static directory. It is intended to help build an interface between stuff on your server box and other stuff that wants to access it over the web.
 
 Routed-to functions are passed the request and response objects as the first two parameters, followed by whatever else you like.
 The request object is automatically augmented with GET and POST maps.
